@@ -1,0 +1,15 @@
+
+1. Stage1: done- Implement a function that decides win or lose of a ttt game
+  iterate through the brd(vertical, horizontal, diagnal) checking for the winning streak
+           done- basic board for testing
+           done- basic gameboard layout,
+           - some features: reset, win/lossPrompt,
+           done - generate girds&event grounping
+
+pseudo code
+function tikTacToe(x, y, flg, brd){
+  // may initialize the brd first
+  brd[x][y]=flg;
+
+
+}
