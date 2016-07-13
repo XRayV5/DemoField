@@ -1,12 +1,37 @@
 console.log("--------TikTacToe behind the Scene--------");
 
-var plotTracker = 0;
+var plotTracker = [];
 var board;
+var brdsize = 3;
+var gameStatus;//finished ? onGoing
+var winTrack;
 var imgPath = ["url(img/cross_red.png)","url(img/greenDot.jpg)"];
+
+
+function gameReset(size){
+  plotTracker=[];
+  clearBrd();
+  board = initBoard(size);
+  initGrids(size);
+}
+
+function clearBrd(){
+  $(".grdgrp>div").remove();
+}
+
+board = initBoard(brdsize);
+initGrids(brdsize);
+$("#reset").on("click",function(){return gameReset(brdsize);});
+
+$("#prpReset").on("click",function(){
+  $("#myModal").css("display","none");
+  $(".modal-header h2").remove();
+  return gameReset(brdsize);
+});
 //imgPath = ["img/cross_red.png","img/greenDot.jpg"];
 //Grid initialization
 function initGrids(size){
-  plotTracker=0;
+  plotTracker=[];
   for(var i=0; i<size; i++){
     for(var j=0; j<size; j++){
       var id = i.toString()+"_"+j.toString();
@@ -16,29 +41,52 @@ function initGrids(size){
   }
     //$(".grdgrp").append("<div class='holder'></div>");
   $(".grid").on("click",function(event){
-    plotTracker++;
+    plotTracker.push(event.target.id);
     console.log(event.target.id);
     plot(event.target.id,plotTracker);
     placeOX(event.target.id,plotTracker);
     $(this).off("click");
+    console.log(plotTracker);
   });
 }
 
 function plot(pit,track){
-
   var piece;
-  if(track%2){
+  if(track.length%2){
     piece="X";
   }else{
     piece="O";
   }
     var xy = pit.split("_");
-    board[xy[0]][xy[1]]=piece;
+    board[xy[0]][xy[1]]=pit+"_"+piece;
     //invoke winOrloss here!
-    winOrloss(board,piece);
+    var result　= winOrloss(board,piece);
+    if(result!==false){
+      gameStatus = "finished";
+      //disable the board
+      $(".grid").off();
+
+      if(typeof result==="object"){
+        if(result[0].includes("X")){
+        //prompt X here
+          promptWin("Player1 is the winner!");
+          console.log("X!!!");
+        }else if(result[0].includes("O")){
+          //promt O here
+          promptWin("Player2 is the winner!");
+          console.log("O!!!");
+        }
+      }
+      else{
+        //prompt Draw!
+        console.log(result+"!!!");
+        promptWin("Draw Game!");
+      }
+
+    }
 }
 function placeOX(pit,track){
-  if(track%2){
+  if(track.length%2){
     //$("#"+pit).append($("<img>").attr("src",imgPath[0]));
     $("#"+pit).css("background-image",imgPath[0]);
     $("#"+pit).css("background-size","contain");
@@ -49,8 +97,6 @@ function placeOX(pit,track){
     $("#"+pit).css("background-size","contain");
   }
 }
-
-
 
 function initBoard(size){
           var iMax = size;
@@ -65,48 +111,67 @@ function initBoard(size){
     return brd;
 }
 
-//$('#my-selector').bind('click', function() {
-//        $(this).unbind('click');
-//        alert('Clicked and unbound!');
-// });
-// $("#dom").on("click",'span',function(event){
-//   console.log(event.target);
-//   console.log(event.target.parentNode);
-//   //$(event.target).remove();
-//   $(event.target.parentNode).remove();
-//   event.target.parentNode.removeChild(this);
-// });
 
-board = initBoard(3);
-initGrids(3);
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+function promptWin(result){
+  $("#myModal").css("display","block");
+  $(".modal-header").append("<h2>"+result+"</h2>");
+}
+
+$(".close").on("click",function(){
+  $("#myModal").css("display","none");
+  $(".modal-header h2").remove();
+});
+
 
 function winOrloss(crtBrd,flg){
   // function of deciding w or l
   //x demension check
   // console.log(flg);
   // console.log(crtBrd);
-  if(judgeCall(crtBrd,flg)){
-    console.log("The winner is "+flg+" horizon");
-    return true;
-  }else if(judgeCall(transposingArr(crtBrd),flg)){
-    console.log("The winner is "+flg+" vertical");
-    return true;
-  }else if(checkDiag(crtBrd,flg)){
-    console.log("The winner is "+flg+" diag");
-    return true;
-  }else if(checkDiagFlip(crtBrd,flg)){
-    console.log("The winner is "+flg+" anti-diag");
-    return true;
-  }else{
-    return false;
-  }
+  var hrzn = judgeCall(crtBrd,flg);
+  var vert = judgeCall(transposingArr(crtBrd),flg);
+  var diag = checkDiag(crtBrd,flg);
+  var anti = checkDiagFlip(crtBrd,flg);
+    if(hrzn!==false){
+      console.log("The winner is "+flg+" horizon");
+      console.log(hrzn);
+      //winTrack = hrzn;
+      return hrzn;
+    }else if(vert!==false){
+      console.log("The winner is "+flg+" vertical");
+      console.log(vert);
+      return vert;
+    }else if(diag!==false){
+      console.log("The winner is "+flg+" diag");
+      console.log("###", diag);
+      winTrack = diag;
+      return diag;
+    }else if(anti!==false){
+      console.log("The winner is "+flg+" anti-diag");
+      console.log(anti);
+      return anti;
+    }else if(plotTracker.length===brdsize*brdsize){
+      console.log("All Tied!");
+      return "draw";
+    }else{
+      return false;
+    }
 }
 
 function judgeCall(crtBrd,flg){
   var win;
   for(var i=0; i<crtBrd.length; i++){
-    if(crtBrd[i].every(function(e){return e===flg;})){
-      win = true;
+    if(crtBrd[i].every(function(e){return e.includes(flg);})){
+      win = crtBrd[i];
       break;
     }
       win = false;
@@ -120,8 +185,8 @@ function checkDiag(crtBrd,flg){
   for(var i=0; i<crtBrd.length; i++){
     diag.push(crtBrd[i][i]);
   }
-  if(diag.every(function(e){return e===flg;})){
-    win = true;
+  if(diag.every(function(e){return e.includes(flg);})){
+    win = diag;
   }
   return win;
 }
@@ -134,8 +199,8 @@ function checkDiagFlip(crtBrd,flg){
     diag.push(crtBrd[i][j]);
     j++;
   }
-  if(diag.every(function(e){return e===flg;})){
-    win = true;
+  if(diag.every(function(e){return e.includes(flg);})){
+    win = diag;
   }
   return win;
 }

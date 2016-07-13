@@ -9,6 +9,11 @@
 
 </head>
 <body>
+<div class="main">
+  <div class="panelLeft">
+    <div id="p1"></div>
+    <div id="p2"></div>
+  </div>
   <div class="board">
     <!-- Grid initialization -->
     <div class="grdgrp">
@@ -24,6 +29,34 @@
       <div class="holder"></div> -->
     </div>
   </div>
+  <div class="panelRight">
+    <div id="ctrlPanel">
+      <button class="btnReset" id="reset">Reset</button>
+      <!-- <button class="btnElmt">?????</button> -->
+    </div>
+  </div>
+</div>
+
+<!-- Pop Up -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <div class="modal-header">
+      <span class="close">X</span>
+
+    </div>
+    <div class="modal-body">
+      <p></p>
+      <p></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btnReset" id="prpReset">Reset</button>
+    </div>
+  </div>
+
+</div>
+
   <script src="lib/jquery-1.11.3.js"></script>
   <script src="lib/underscore.js"></script>
   <script src="main.js"></script>
