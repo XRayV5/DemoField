@@ -6,7 +6,7 @@ var brdsize = 3;
 var gameStatus;//finished ? onGoing
 var winTrack;
 var imgPath = ["url(img/cross_red.png)","url(img/greenDot.jpg)"];
-
+var gameMode="HvB";
 
 function gameReset(size){
   plotTracker=[];
@@ -38,6 +38,7 @@ function initGrids(size){
       var $grid = $("<div>").addClass("grid").attr("id",id)
       $(".grdgrp").append($grid);
     }
+      $(".grdgrp").append("<div class='holder'></div>")
   }
     //$(".grdgrp").append("<div class='holder'></div>");
   $(".grid").on("click",function(event){
@@ -46,8 +47,52 @@ function initGrids(size){
     plot(event.target.id,plotTracker);
     placeOX(event.target.id,plotTracker);
     $(this).off("click");
+    if(gameMode==="HvB"){
+        //invoke botMove here
+        console.log("??????");
+        plotBot(board,plotTracker);
+    }
+
     console.log(plotTracker);
   });
+}
+
+function plotBot(crtBrd,track){
+  if(gameStatus!=="finished"){
+  if((track.length+1)%2){
+    piece="X";
+  }else{
+    piece="O";
+  }
+  var move = botMove(crtBrd,piece);
+  plotTracker.push(move[0]);
+  var xy = move[0].split("_");
+  crtBrd[xy[0]][xy[1]]=move[0]+"_"+piece;
+  placeOX(move[0],track);
+  $("#"+move[0]).off();
+  var result　= winOrloss(crtBrd,piece);
+  if(result!==false){
+    gameStatus = "finished";
+    //disable the board
+    $(".grid").off();
+    if(typeof result==="object"){
+      if(result[0].includes("X")){
+      //prompt X here
+        promptWin("Player1 is the winner!");
+        console.log("X!!!");
+      }else if(result[0].includes("O")){
+        //promt O here
+        promptWin("Player2 is the winner!");
+        console.log("O!!!");
+      }
+    }
+    else{
+      //prompt Draw!
+      console.log(result+"!!!");
+      promptWin("Draw Game!");
+    }
+    }
+  }
 }
 
 function plot(pit,track){
@@ -84,17 +129,19 @@ function plot(pit,track){
       }
 
     }
+    console.log(board);//for testing
 }
 function placeOX(pit,track){
   if(track.length%2){
     //$("#"+pit).append($("<img>").attr("src",imgPath[0]));
     $("#"+pit).css("background-image",imgPath[0]);
     $("#"+pit).css("background-size","contain");
+    $("#"+pit).css("background-repeat","no-repeat");
   }else{
     //$("#"+pit).append($("<img>").attr("src",imgPath[1]));
-
     $("#"+pit).css("background-image",imgPath[1]);
     $("#"+pit).css("background-size","contain");
+    $("#"+pit).css("background-repeat","no-repeat");
   }
 }
 
@@ -214,6 +261,201 @@ function transposingArr(array){
   });
   return newArray;
 }
+
+
+var testCase8 = [
+  ["0_0_X","0_1_X",""],
+  ["1_0_X","1_1_X","1_2_O"],
+  ["","2_1_O",""]
+];
+var testCase9 = [
+  ["0_0_O","0_1_X","0_2_O"],
+  ["1_0_X","1_1_X","1_2_O"],
+  ["","2_1_O",""]
+];
+var testCase10 = [
+  ["0_0_O","",""],
+  ["1_0_X","",""],
+  ["","",""]
+];
+
+//console.log(transposingArr(testCase5)+"!!!");
+
+// var show = botMove(testCase10,"X");
+// console.log(show[0]);
+
+
+//transpose crtBrd and swap x,y to check up and down
+function probeInline(x,y,crtBrd,flg){
+  var weight=1;
+  //search right
+  //console.log(crtBrd[x][y+1]);
+  var toWin = crtBrd.length;
+  for(var i = y+1; i<crtBrd.length; i++){
+    if(crtBrd[x][i].includes(flg)){
+      //console.log(crtBrd[x][i]);
+      weight++;
+    }else if(crtBrd[x][i]===""){
+      weight+=0.5;
+    }else{
+      break;
+    }
+  }
+  //search left
+  for(var j = y-1; j>=0; j--){
+    //console.log(crtBrd[x][j]);
+    if(crtBrd[x][j].includes(flg)){
+      weight++;
+    }else if(crtBrd[x][i]===""){
+      weight+=0.5;
+    }else{
+      break;
+    }
+  }
+  if(weight===toWin){
+    //if it is the winning shot
+      weight+=100;
+  }
+  return weight;
+}
+
+function probeDiag(x,y,crtBrd,flg){
+  var weight = 1;
+  // for(var i = x+1;i<crtBrd.length; i++){
+  //   if(crtBrd[i][])
+  // }
+  var toWin = crtBrd.length;
+    if(x===y){
+      for(var i=x+1; i<crtBrd.length; i++){
+        if(crtBrd[i][i].includes(flg)){
+          weight++;
+        }else if(crtBrd[x][i]===""){
+          weight+=0.5;
+        }else{
+          break;
+        }
+      }
+
+      for(var i=x-1; i>=0; i--){
+        if(crtBrd[i][i].includes(flg)){
+          weight++;
+        }else if(crtBrd[x][i]===""){
+          weight+=0.5;
+        }else{
+          break;
+        }
+      }
+      if(weight===toWin){
+        //if it is the winning shot
+          weight+=100;
+      }
+    }
+  return weight;
+}
+
+function probeRevDiag(x,y,crtBrd,flg){
+  var weight = 1;
+  var toWin = crtBrd.length;
+    if(x+y===(crtBrd.length-1)){
+      var j=y-1;
+        for(var i=x+1; i<crtBrd.length; i++){
+          if(crtBrd[i][j].includes(flg)){
+            weight++;
+          }else if(crtBrd[x][i]===""){
+            weight+=0.5;
+          }else{
+            break;
+          }
+          j--;
+        }
+      var k=y+1;
+      for(var i=x-1; i>=0; i--){
+        if(crtBrd[i][k].includes(flg)){
+          //console.log(crtBrd[i][k]);
+          weight++;
+        }else if(crtBrd[x][i]===""){
+          weight+=0.5;
+        }else{
+          console.log(crtBrd[i][k]);
+          break;
+        }
+        k++;
+      }
+      if(weight===toWin){
+        //if it is the winning shot
+          weight+=100;
+      }
+    }
+  return weight;
+}
+
+
+
+function botMove(crtBrd,flg){
+  var moves = [];
+  var defense=[];
+  var optimal=0;
+  var threat=0;
+  var goToMove={};
+  var notToLose={};
+  moves = planning(crtBrd,flg);
+  for(var k in moves){
+    if(moves[k]>optimal){
+      optimal=moves[k];
+      goToMove[0]=k;
+      goToMove[1]=moves[k];
+    }
+  }
+  if(flg==="X"){
+    defense=planning(crtBrd,"O");
+    for(var k in defense){
+      if(defense[k]>threat){
+        threat=defense[k];
+        notToLose[0]=k;
+        notToLose[1]=defense[k];
+      }
+    }
+  }else{
+    defense=planning(crtBrd,"X");
+    for(var k in defense){
+      if(defense[k]>threat){
+        threat=defense[k];
+        notToLose[0]=k;
+        notToLose[1]=defense[k];
+      }
+    }
+  }
+  if(notToLose[1]>goToMove[1]){
+    console.log(notToLose[1]+"!!!");
+    goToMove=notToLose;
+  }
+  console.log(moves);
+  console.log(defense);
+  return goToMove;
+}
+
+function planning(crtBrd,flg){
+  var go=[];
+  for(var i = 0; i < crtBrd.length; i++){
+    for(var j = 0; j < crtBrd[i].length; j++){
+      if(crtBrd[i][j]===""){
+        //console.log(i+"_"+j);
+        var avail = i+"_"+j;
+        var w1 = probeInline(i,j,crtBrd,flg);
+        var w2 = probeInline(j,i,transposingArr(crtBrd),flg);
+        var w3 = probeDiag(i,j,crtBrd,flg);
+        var w4 = probeRevDiag(i,j,crtBrd,flg);
+        go[avail]=w1+w2+w3+w4;
+        //search inline X and Y
+      }
+    }
+  }
+  return go;
+}
+
+
+
+
 //test field
 // showBrd(testCase4);//judgeCall
 // showBrd(transposingArr(testCase4));

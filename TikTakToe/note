@@ -6,9 +6,16 @@
            done- retrieve wining streak
            done- draw game?
            done- Reset function;
-           - end the game -> prompt result
-
+           done- end the game -> prompt result
            done - generate grids&event grounping
+
+   Stage2: AI
+           switch who goes first
+           Player feature: Player1 Player2 Player-ProfilePic
+           storing record, rank
+           new grid layout
+           Show winning streak
+                   timer and count down
 
 pseudo code
 function tikTacToe(x, y, flg, brd){
