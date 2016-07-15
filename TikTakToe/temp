@@ -1,4 +1,45 @@
+.style-5 input[type="text"] {
+  padding: 10px;
+  border: solid 1px #fff;
+  box-shadow: inset 1px 1px 2px 0 #707070;
+  transition: box-shadow 0.3s;
+}
+.style-5 input[type="text"]:focus,
+.style-5 input[type="text"].focus {
+  box-shadow: inset 1px 1px 2px 0 #c9c9c9;
+}
+
+
 else if(plotTracker.length=brdsize*brdsize){
   console.log("All Tied!");
   return "draw";
 }
+
+function promptWin(result){
+  $("#myModal").css("display","block");
+  $(".modal-header").append("<h2>"+result+"</h2>");
+}
+
+function addGridEvent(){
+  $(".grid").on("click",function(event){
+    plotTracker.push(event.target.id);
+    console.log(event.target.id);
+    plot(event.target.id,plotTracker);
+    placeOX(event.target.id,plotTracker);
+    $(this).off("click");
+}
+
+
+
+
+$(".grid").on("click",function(event){
+  plotTracker.push(event.target.id);
+  console.log(event.target.id);
+  plot(event.target.id,plotTracker);
+  placeOX(event.target.id,plotTracker);
+  $(this).off("click");
+  if(gameMode==="HvB"){
+      //invoke botMove here
+      //console.log("??????");
+      plotBot(board,plotTracker);
+  }

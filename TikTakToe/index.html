@@ -33,28 +33,74 @@
     <div id="ctrlPanel">
       <button class="btnReset" id="reset">Reset</button>
       <!-- <button class="btnElmt">?????</button> -->
-    </div>
+      <div class="dropdown" id="oriDrp">
+          <button class="dropbtn" id="Gmode">Game Mode</button>
+          <!-- Lines to populate  -->
+          <div class="dropdown-content" id="oriDrp1">
+              <div class="lineDiv" id="HvH">Hum Vs. Hum</div>
+              <div class="lineDiv" id="HvB">RayBot Challenge</div>
+              <div class="lineDiv" id="BvB">War of Bots</div>
+          </div>
+      </div>
+      <div class="dropdown" id="goFirstDrp">
+          <button class="dropbtn" id="GoFirst">Go First?</button>
+          <!-- Lines to populate  -->
+          <div class="dropdown-content" id="goDrp">
+              <div class="goDiv" id="H">My first go!</div>
+              <div class="goDiv" id="B">You're insane...</div>
+          </div>
+      </div>
+      <div class="dropdown" id="scale">
+          <button class="dropbtn" id="scaleOpt">More Grids?</button>
+          <!-- Lines to populate  -->
+          <div class="dropdown-content" id="scaleDrp">
+              <div class="sizeDiv" id="3">3 X 3</div>
+              <div class="sizeDiv" id="4">4 X 4</div>
+              <div class="sizeDiv" id="5">5 X 5</div>
+              <div class="sizeDiv" id="8">8 X 8</div>
+          </div>
+      </div>
+      <button class="btnReset" id="AddNew">Add New Player</button>
+   </div>
   </div>
-</div>
-
-<!-- Pop Up -->
+  </div>
 <div id="myModal" class="modal">
-
   <!-- Modal content -->
   <div class="modal-content">
-    <div class="modal-header">
+    <div class="modal-header" id="winner">
       <span class="close">X</span>
-
     </div>
     <div class="modal-body">
       <p></p>
       <p></p>
     </div>
     <div class="modal-footer">
-      <button class="btnReset" id="prpReset">Reset</button>
+      <button class="btnReset" id="prpReset">Try again?</button>
     </div>
   </div>
+</div>
 
+<div id="playerPanel" class="modal">
+<div class="modal-content">
+  <div class="modal-header" id="playerHeader">
+    <h2>Player Panel</h2>
+  </div>
+  <div class="modal-body">
+    <!-- play info here -->
+    <div class="style-5">
+      <h3>Name:</h3>
+      <input id = "pname" class="style-5" type="text" placeholder="Enter Player Name">
+    </div>
+    <div class="scoreBoard">
+      <h3>The best and brightest:</h3>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+        <button class="btnReset" id="addPlayer">Add Player</button>
+        <button class="btnReset" id="cancel">Cancel</button>
+  </div>
+</div>
 </div>
 
   <script src="lib/jquery-1.11.3.js"></script>

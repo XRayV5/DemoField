@@ -9,13 +9,31 @@
            done- end the game -> prompt result
            done - generate grids&event grounping
 
-   Stage2: AI
-           switch who goes first
+   Stage2: Fixed-!!!!TimeIntervalBug-BvB Ask DT
+           half done-new grid layout
+           Solved-Reset Bug
+           done-AI
+           done-Scalable
+           done-switch who goes first
+           done-Bots play
+
+           done-Random first step - Bots
+                      Show winning streak
+                   timer and count down
+
+  stage 3: done - Highlight winning combo
            Player feature: Player1 Player2 Player-ProfilePic
            storing record, rank
-           new grid layout
-           Show winning streak
-                   timer and count down
+           fix AI issues
+           adjustable diffculty
+
+Take Away:
+  1. Organize your global variables in an object
+  2. Time interval - Remember!
+  3.
+
+
+
 
 pseudo code
 function tikTacToe(x, y, flg, brd){

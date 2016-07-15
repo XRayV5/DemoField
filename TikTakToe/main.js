@@ -5,22 +5,35 @@ var board;
 var brdsize = 3;
 var gameStatus;//finished ? onGoing
 var winTrack;
-var imgPath = ["url(img/cross_red.png)","url(img/greenDot.jpg)"];
+var imgPath = ["url(img/cross_red.png)","url(img/greenCircle.png)"];
 var gameMode="HvB";
+var goFirst = "H";//H or B
+var haltTime=1000;
+var interId = 0;
 
 function gameReset(size){
+  gameStatus="onGoing";
   plotTracker=[];
   clearBrd();
+  clearIntervals();
   board = initBoard(size);
   initGrids(size);
+}
+
+function clearIntervals() {
+  // for (var i = 0; i < 99; i++) {
+  //   window.clearInterval(i);
+  // }
+  window.clearInterval(interId);
 }
 
 function clearBrd(){
   $(".grdgrp>div").remove();
 }
 
-board = initBoard(brdsize);
-initGrids(brdsize);
+// board = initBoard(brdsize);
+// initGrids(brdsize);
+
 $("#reset").on("click",function(){return gameReset(brdsize);});
 
 $("#prpReset").on("click",function(){
@@ -28,6 +41,36 @@ $("#prpReset").on("click",function(){
   $(".modal-header h2").remove();
   return gameReset(brdsize);
 });
+
+addGameModes("lineDiv","Gmode");
+addGoFirst("goDiv","GoFirst");
+addScale("sizeDiv","scaleOpt");
+function addGameModes(str1,str2){
+  $("."+str1).on("click", function() {
+    $("#"+str2).text($(this).text());
+    gameMode=$(this).attr("id");
+    gameReset(brdsize);
+  });
+}
+
+function addGoFirst(str1,str2){
+  $("." + str1).on("click", function() {
+    $("#" + str2).text($(this).text());
+    goFirst=$(this).attr("id");
+    gameReset(brdsize);
+  });
+}
+
+function addScale(str1,str2){
+  $("." + str1).on("click", function() {
+    $("#" + str2).text($(this).text());
+    brdsize=Number($(this).attr("id"));
+    gameReset(brdsize);
+  });
+}
+
+
+gameReset(brdsize);
 //imgPath = ["img/cross_red.png","img/greenDot.jpg"];
 //Grid initialization
 function initGrids(size){
@@ -38,32 +81,77 @@ function initGrids(size){
       var $grid = $("<div>").addClass("grid").attr("id",id)
       $(".grdgrp").append($grid);
     }
-      $(".grdgrp").append("<div class='holder'></div>")
   }
-    //$(".grdgrp").append("<div class='holder'></div>");
-  $(".grid").on("click",function(event){
-    plotTracker.push(event.target.id);
-    console.log(event.target.id);
-    plot(event.target.id,plotTracker);
-    placeOX(event.target.id,plotTracker);
-    $(this).off("click");
-    if(gameMode==="HvB"){
-        //invoke botMove here
-        console.log("??????");
-        plotBot(board,plotTracker);
+  if(size===3){
+      $(".grid").css({  "width":"28%","height":"30%"});
+    }else if(size===4){
+      $(".grid").css({  "width":"20%","height":"21%"});
+    }else if(size===5){
+      $(".grid").css({  "width":"15%","height":"17%"});
+    }else if(size===8){
+      $(".grid").css({  "width":"7.5%","height":"8%"});
     }
+    $(".grdgrp").append("<div class='holder'></div>");
+    //$(".grdgrp").append("<div class='holder'></div>");
 
-    console.log(plotTracker);
-  });
+    if(gameMode==="HvH"){
+      $(".grid").on("click",function(event){
+        plotTracker.push(event.target.id);
+        console.log(event.target.id);
+        plot(event.target.id,plotTracker);
+        placeOX(event.target.id,plotTracker);
+        $(this).off("click");
+
+        console.log(plotTracker);
+      });
+   }else if(gameMode==="HvB"){
+    if(goFirst==="H"){
+     $(".grid").on("click",function(event){
+       plotTracker.push(event.target.id);
+       console.log(event.target.id);
+       plot(event.target.id,plotTracker);
+       placeOX(event.target.id,plotTracker);
+       $(this).off("click");
+       console.log(plotTracker);
+       plotBot(board,plotTracker);
+     });
+   }else{
+     plotBot(board,plotTracker);
+     $(".grid").on("click",function(event){
+       plotTracker.push(event.target.id);
+       console.log(event.target.id);
+       plot(event.target.id,plotTracker);
+       placeOX(event.target.id,plotTracker);
+       $(this).off("click");
+       console.log(plotTracker);
+       plotBot(board,plotTracker);
+     });
+   }
+  }else{
+    //bot vs. bot game process here
+    plotBot(board,plotTracker);
+    interId = setInterval(function(){return plotBot(board,plotTracker);}, haltTime);
+  }
 }
 
 function plotBot(crtBrd,track){
   if(gameStatus!=="finished"){
-  if((track.length+1)%2){
-    piece="X";
-  }else{
-    piece="O";
-  }
+
+      if(goFirst==="H"){
+        if((track.length)%2){
+          piece="O";
+        }else{
+          piece="X";
+        }
+      }else{
+        //debug here check!
+        if((track.length)%2){
+          piece="X";
+        }else{
+          piece="O";
+        }
+      }
+
   var move = botMove(crtBrd,piece);
   plotTracker.push(move[0]);
   var xy = move[0].split("_");
@@ -76,6 +164,7 @@ function plotBot(crtBrd,track){
     //disable the board
     $(".grid").off();
     if(typeof result==="object"){
+      showWinCombo(result);
       if(result[0].includes("X")){
       //prompt X here
         promptWin("Player1 is the winner!");
@@ -97,10 +186,19 @@ function plotBot(crtBrd,track){
 
 function plot(pit,track){
   var piece;
-  if(track.length%2){
-    piece="X";
+  if(goFirst==="H"){
+    if((track.length)%2){
+      piece="X";
+    }else{
+      piece="O";
+    }
   }else{
-    piece="O";
+    //debug here check!
+    if((track.length)%2){
+      piece="O";
+    }else{
+      piece="X";
+    }
   }
     var xy = pit.split("_");
     board[xy[0]][xy[1]]=pit+"_"+piece;
@@ -159,19 +257,60 @@ function initBoard(size){
 }
 
 
-// Get the modal
-var modal = document.getElementById('myModal');
+function showWinCombo(winCombo){
+  for(var i = 0;i < winCombo.length;i++){
+  var winElmt = winCombo[i].split("_").slice(0,2).join("_");
+  console.log(winElmt);
+  $("#"+winElmt).css({"background-color":"yellow"});
+  }
+}
 
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
+$("#AddNew").on("click",function(){
+  return showPanel();
+});
 
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+
+$("#addPlayer").on("click",function(){
+  $(".scoreBoard .rds").remove();
+  return addPlayer();
+});
+
+$("#cancel").on("click",function(){
+  $("#playerPanel").css("display","none");
+  $(".scoreBoard .rds").remove();
+});
 
 function promptWin(result){
   $("#myModal").css("display","block");
-  $(".modal-header").append("<h2>"+result+"</h2>");
+  $("#winner").append("<h2>"+result+"</h2>");
 }
+
+function showPanel(){
+  $("#playerPanel").css("display","block");
+  printPlayers();
+}
+
+function addPlayer(){
+    //$(".scoreBoard").append("<div>"+$("#pname").val()+"</div>");
+    //access local storage
+    localStorage.setItem($("#pname").val(), "");
+    printPlayers();
+}
+
+
+function printPlayers(){
+  for(var k in localStorage){
+      $(".scoreBoard").append("<div class='rds'>"+k+" : "+localStorage[k]+"</div>");
+  }
+  $(".rds").on("click",function(event){
+    $("#p1").append("<div class='playerUp'>" + event.target.textContent + "</div>");
+  });
+}
+
+
+
+
+
 
 $(".close").on("click",function(){
   $("#myModal").css("display","none");
@@ -398,37 +537,45 @@ function botMove(crtBrd,flg){
   var threat=0;
   var goToMove={};
   var notToLose={};
-  moves = planning(crtBrd,flg);
-  for(var k in moves){
-    if(moves[k]>optimal){
-      optimal=moves[k];
-      goToMove[0]=k;
-      goToMove[1]=moves[k];
-    }
-  }
-  if(flg==="X"){
-    defense=planning(crtBrd,"O");
-    for(var k in defense){
-      if(defense[k]>threat){
-        threat=defense[k];
-        notToLose[0]=k;
-        notToLose[1]=defense[k];
-      }
-    }
+  if(plotTracker.length===0){
+    var x = Math.floor(Math.random()*3);//Math.floor((Math.random() * 10) + 1);
+    var y = Math.floor(Math.random()*3);
+    goToMove[0]=x.toString()+"_"+y.toString();
+    goToMove[1]=1;
   }else{
-    defense=planning(crtBrd,"X");
-    for(var k in defense){
-      if(defense[k]>threat){
-        threat=defense[k];
-        notToLose[0]=k;
-        notToLose[1]=defense[k];
+    moves = planning(crtBrd,flg);
+    for(var k in moves){
+      if(moves[k]>optimal){
+        optimal=moves[k];
+        goToMove[0]=k;
+        goToMove[1]=moves[k];
       }
     }
+    if(flg==="X"){
+      defense=planning(crtBrd,"O");
+      for(var k in defense){
+        if(defense[k]>threat){
+          threat=defense[k];
+          notToLose[0]=k;
+          notToLose[1]=defense[k];
+        }
+      }
+    }else{
+      defense=planning(crtBrd,"X");
+      for(var k in defense){
+        if(defense[k]>threat){
+          threat=defense[k];
+          notToLose[0]=k;
+          notToLose[1]=defense[k];
+        }
+      }
+    }
+    if(notToLose[1]>goToMove[1]){
+      console.log(notToLose[1]+"!!!");
+      goToMove=notToLose;
+    }
   }
-  if(notToLose[1]>goToMove[1]){
-    console.log(notToLose[1]+"!!!");
-    goToMove=notToLose;
-  }
+
   console.log(moves);
   console.log(defense);
   return goToMove;

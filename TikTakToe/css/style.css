@@ -38,7 +38,7 @@ body{
 .panelRight{
   margin:auto;
   width:30%;
-  height:600px;
+  height:800px;
   float: left;
 }
 #ctrlPanel{
@@ -71,7 +71,7 @@ body{
   height:700px;
   padding:5% 0 0 1%;
   float:left;
-  background-image: url("../img/tttBoard.jpg");
+  background-image: url("../img/tttBoard_blank.jpg");
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -83,10 +83,14 @@ body{
 }
 
 .grid{
+  box-sizing: border-box;
   width:28%;
   height:30%;
   float:left;
+  border-style: solid;
+  border-width: 1%;
   margin:2% 3% 1% 2%;
+  //margin:auto;
   //background-color: plum;
 }
 
@@ -94,6 +98,126 @@ body{
   margin:auto;
   clear:both;
 }
+
+
+.dropdown {
+  position: relative;
+  //float:left;
+  width: 50%;
+  margin: 10% auto;
+}
+.dropbtn{
+  color:#eba700;
+  font-size: 1em;
+  border: none;
+  border-radius: 4px;
+  background-color: #b30738;
+  margin:auto;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  width:100%;
+  cursor: pointer;
+}
+.dropdown-content {
+    display: none;
+    //float:left;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 100%;
+    //height:3em;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.dropdown-content .lineDiv {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content .goDiv {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content .sizeDiv {
+    color: black;
+    padding: 12px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+
+
+.subdrpdwn{
+    display: none;
+    margin-left: 100%;
+    margin-top: -15%;
+    //position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.subdrpdwn .stpDiv {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+
+.rds {
+    color: black;
+    padding: 6px 8px;
+    text-decoration: none;
+    display: block;
+}
+
+.rds:hover {
+  background-color: #ffd500;
+}
+
+
+.dropdown-content .lineDiv:hover {
+  background-color: #ffd500;
+}
+.dropdown-content .goDiv:hover {
+  background-color: #ffd500;
+}
+.dropdown-content .sizeDiv:hover {
+  background-color: #ffd500;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    z-index: 1;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #333333;
+    color:#ffd500;
+}
+
+.subdrpdwn .stpDiv:hover {
+  background-color: #ffd500;
+}
+
+.dropdown-content:hover .subdrpdwn{
+  display: block;
+  z-index: 1;
+}
+
+
+
+
+
+
+
 
 
 .modal {
@@ -153,6 +277,7 @@ body{
 
 .modal-header {
     padding: 2px 16px;
+    height:60px;
     background-color: #5cb85c;
     color: white;
 }
@@ -164,6 +289,43 @@ body{
     background-color: #5cb85c;
     color: white;
 }
+
+
+input[type="text"] {
+  display: block;
+  margin: 0;
+  width: 30%;
+  font-family: sans-serif;
+  font-size: 18px;
+  appearance: none;
+  box-shadow: none;
+  border-radius: none;
+}
+
+input[type="text"]:focus {
+  outline: none;
+}
+
+.style-5 input[type="text"] {
+  padding: 10px;
+  border: solid 1px #fff;
+  box-shadow: inset 1px 1px 2px 0 #707070;
+  transition: box-shadow 0.3s;
+}
+.style-5 input[type="text"]:focus,
+.style-5 input[type="text"].focus {
+  box-shadow: inset 1px 1px 2px 0 #c9c9c9;
+}
+
+
+
+
+
+
+
+
+
+
 
 
 /*.holder{
