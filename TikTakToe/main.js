@@ -439,22 +439,27 @@ function probeInline(x,y,crtBrd,flg){
     }else{
       break;
     }
+    //if(x===1&&y===1){console.log("HR:"+weight);}//testing
   }
   //search left
   for(var j = y-1; j>=0; j--){
     //console.log(crtBrd[x][j]);
+    //if(x===1&&y===1){console.log("HL:"+weight);}
     if(crtBrd[x][j].includes(flg)){
       weight++;
-    }else if(crtBrd[x][i]===""){
+    }else if(crtBrd[x][j]===""){
       weight+=0.5;
+      //if(x===1&&y===1){console.log("HL:"+weight);}
     }else{
       break;
     }
+
   }
   if(weight===toWin){
     //if it is the winning shot
       weight+=100;
   }
+//if(x===1&&y===1){console.log("H:"+weight);}
   return weight;
 }
 
@@ -468,7 +473,7 @@ function probeDiag(x,y,crtBrd,flg){
       for(var i=x+1; i<crtBrd.length; i++){
         if(crtBrd[i][i].includes(flg)){
           weight++;
-        }else if(crtBrd[x][i]===""){
+        }else if(crtBrd[i][i]===""){
           weight+=0.5;
         }else{
           break;
@@ -478,7 +483,7 @@ function probeDiag(x,y,crtBrd,flg){
       for(var i=x-1; i>=0; i--){
         if(crtBrd[i][i].includes(flg)){
           weight++;
-        }else if(crtBrd[x][i]===""){
+        }else if(crtBrd[i][i]===""){
           weight+=0.5;
         }else{
           break;
@@ -489,6 +494,7 @@ function probeDiag(x,y,crtBrd,flg){
           weight+=100;
       }
     }
+    //console.log("DiagW:"+ x + y + ":" + weight);
   return weight;
 }
 
@@ -500,7 +506,7 @@ function probeRevDiag(x,y,crtBrd,flg){
         for(var i=x+1; i<crtBrd.length; i++){
           if(crtBrd[i][j].includes(flg)){
             weight++;
-          }else if(crtBrd[x][i]===""){
+          }else if(crtBrd[i][j]===""){
             weight+=0.5;
           }else{
             break;
@@ -512,7 +518,7 @@ function probeRevDiag(x,y,crtBrd,flg){
         if(crtBrd[i][k].includes(flg)){
           //console.log(crtBrd[i][k]);
           weight++;
-        }else if(crtBrd[x][i]===""){
+        }else if(crtBrd[i][k]===""){
           weight+=0.5;
         }else{
           console.log(crtBrd[i][k]);
@@ -538,8 +544,8 @@ function botMove(crtBrd,flg){
   var goToMove={};
   var notToLose={};
   if(plotTracker.length===0){
-    var x = Math.floor(Math.random()*3);//Math.floor((Math.random() * 10) + 1);
-    var y = Math.floor(Math.random()*3);
+    var x = Math.floor(Math.random()*crtBrd.length);//Math.floor((Math.random() * 10) + 1);
+    var y = Math.floor(Math.random()*crtBrd.length);
     goToMove[0]=x.toString()+"_"+y.toString();
     goToMove[1]=1;
   }else{
@@ -578,6 +584,7 @@ function botMove(crtBrd,flg){
 
   console.log(moves);
   console.log(defense);
+  console.log(goToMove);
   return goToMove;
 }
 
@@ -592,6 +599,7 @@ function planning(crtBrd,flg){
         var w2 = probeInline(j,i,transposingArr(crtBrd),flg);
         var w3 = probeDiag(i,j,crtBrd,flg);
         var w4 = probeRevDiag(i,j,crtBrd,flg);
+        if(avail==="2_2"){console.log("H:V:D:RD"+ "-" + w1+":"+w2+":"+w3+":"+w4);}
         go[avail]=w1+w2+w3+w4;
         //search inline X and Y
       }
